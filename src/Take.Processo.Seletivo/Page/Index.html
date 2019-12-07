@@ -1,0 +1,122 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chat</title>
+</head>
+<body>
+    <div class="container">
+        <main role="main" class="pb-3">
+            
+            <input type="text"
+                   id="newMessage"
+                   onkeyup="if(event.key==='Enter' ) clickSend()" />
+            
+            <input type="button"
+                   id="sender"
+                   value="Send"
+                   onclick=" clickSend()" />
+            
+            <input type="button" 
+                   id="closer" 
+                   value="Disconnect" 
+                   onclick=" clickClose()" />
+
+            <div id="output"></div>
+        </main>
+    </div>
+    <script language=" javascript" type=" text/javascript">
+
+        var user = prompt('Digite seu nome para entrar no chat', 'Usuário');
+
+        var wsUri = "ws://localhost:8080?UserName=" + user;
+              var output;
+              var websocket;
+
+              function init()
+              {
+                  output = document.getElementById("output");
+                  configWebSocket();
+              }
+
+              function configWebSocket()
+              {
+                  websocket = new WebSocket(wsUri);
+                  websocket.onopen = function(evt) { onOpen(evt) };
+                  websocket.onclose = function(evt) { onClose(evt) };
+                  websocket.onmessage = function(evt) { onMessage(evt) };
+                  websocket.onerror = function(evt) { onError(evt) };
+              }
+
+              function onOpen(evt)
+              {
+                  sendTextFrame("Entrou na sala");
+              }
+
+              function onClose(evt)
+              {
+                  emit("Não está conectado.");
+              }
+
+              function onMessage(evt)
+              {
+                  emit('<span style=" color:blue;">' + evt.data + '</span>');
+              }
+
+              function onError(evt)
+              {
+                  emit('<span style=" color:red;">ERROR: ' + evt.data + '</span>');
+              }
+
+              function sendTextFrame(message)
+              {
+                  if (websocket.readyState == WebSocket.OPEN)
+                  {
+                      websocket.send(message);
+                  }
+                  else
+                  {
+                      emit("Socket not open, state: " + websocket.readyState);
+                  }
+              }
+
+              function emit(message)
+              {
+                  var pre = document.createElement("p");
+                  pre.style.wordWrap = "break-word";
+                  pre.innerHTML = message;
+                  output.appendChild(pre);
+              }
+
+              function clickSend()
+              {
+                  var txt = document.getElementById("newMessage");
+                  if (txt.value.length > 0)
+                  {
+                      sendTextFrame(txt.value);
+                      txt.value = "";
+                      txt.focus();
+                  }
+              }
+
+              function clickClose()
+              {
+                  if (websocket.readyState == WebSocket.OPEN)
+                  {
+                      websocket.close();
+                  }
+                  else
+                  {
+                      emit("Socket not open, state: " + websocket.readyState);
+                  }
+                  document.getElementById("sender").disabled = true;
+                  document.getElementById("closer").disabled = true;
+                  document.getElementById("newMessage").disabled = true;
+              }
+
+              window.addEventListener("load", init, false);
+
+    </script>
+</body>
+</html>
