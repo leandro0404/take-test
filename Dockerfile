@@ -4,6 +4,6 @@ WORKDIR /app
 COPY . ./
 
 EXPOSE 5000/tcp
-ENV ASPNETCORE_URLS http://*:5000
+ENV ASPNETCORE_URLS http://*:8080
 
-ENTRYPOINT ["./take_net_prova"]
+ENTRYPOINT ["./Take.Processo.Seletivo"]
