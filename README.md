@@ -9,7 +9,7 @@ e abrir navegador  em http://localhost:8080/  para testar aplicação
 #### Run
 ```cmd
 dotnet build
-cd src/take_net_prova
+cd src/Take.Processo.Seletivo
 dotnet run
 ```
 
